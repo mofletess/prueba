@@ -1,0 +1,79 @@
+<?php
+
+//inicio de programma
+session_start();
+require "vendor/autoload.php";
+
+use eftec\bladeone\Bladeone;
+
+$views = __DIR__ . '/views';
+$cache = __DIR__ . '/cache';
+
+$blade = new Bladeone($views, $cache, BladeOne::MODE_DEBUG);
+
+//constantes
+const BOARD_SIZE = 7;
+const PATH_EMPTY_PIC = "\public\assets\img\blanco.png";
+const PATH_PLAYER_PIC = "\public\assets\img\amarillo.png";
+const PATH_COMPUTER_PIC = "\public\assets\img\arojo.png";
+
+include 'funciones.php';
+//inicio de programma si esta vacio lo creamos
+if (empty($_POST)) {
+    $_SESSION['tablero'] = array_fill(0, BOARD_SIZE, array_fill(0, BOARD_SIZE, ""));
+    /*$tabla=$_SESSION['tablero'];
+      rellenarTabla($tabla);
+      $_SESSION['tablero']=$tabla;
+     */
+    echo $blade->run('move');
+} else {
+    //variables 
+    $xU = filter_input(INPUT_POST, 'x');
+    $yU = filter_input(INPUT_POST, 'y');
+    $tabla = $_SESSION['tablero'];
+    //asignamos el o a la tabla
+    
+    $tabla[$xU][$yU] = 'o';
+
+    //comprobamos si el usuario ha ganado haciendo el ultimo movimiento o no
+    if (checkGanado($tabla, 'o')) {
+        $res['gameRes'] = 1;
+    } else if (tableroLleno($tabla)) {
+        //si el tablero esta lleno devolvemos un 0 y se pierde
+        $res['gameRes'] = 0;
+    } else {
+        $xC;
+        $yC;
+        $puesto=false;
+        while (!$puesto) {
+            $yC = rand(0, BOARD_SIZE - 1);
+            for ($i = 0 ; $i < BOARD_SIZE - 1; $i++) {
+                if ($tabla[$i+1][$yC] != '' && $tabla[$i][$yC] == '') {
+                    $tabla[$i][$yC] = 'x';
+                    $xC = $i;
+                    $puesto=true;
+                    break;
+                }else if($i==5 && $tabla[$i+1][$yC] == ''){
+                    $tabla[$i+1][$yC] = 'x';
+                    $xC = $i+1;
+                    $puesto=true;
+                    break;
+                }
+            }
+        }
+        
+        
+        $res['x'] = $xC;
+        $res['y'] = $yC;
+        //comprobamos si ha ganado el ordenador
+        if (checkGanado($tabla, 'x')) {
+            $res['gameRes'] = -1;
+        } else if (tableroLleno($tabla)) {
+            $res['gameRes'] = 0;
+        }
+    }
+    $_SESSION['tablero'] = $tabla;
+    echo json_encode($res);
+    exit;
+}
+?>
