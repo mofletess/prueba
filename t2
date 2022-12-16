@@ -1,0 +1,130 @@
+<?php
+
+//FUNCCIONES
+/*
+  function rellenarTabla($tabla){
+  for ($i = 0; $i < BOARD_SIZE; $i++) {
+  for ($j = 0; $j < BOARD_SIZE; $j++) {
+  $tabla[$i][$j]="";
+  if ($tabla[$i][$j] == "") {
+  $tabla[$i][$j]="";
+  }
+  }
+  }
+  return $tabla;
+  }
+ */
+
+//devuelve un posicion vacio de fila si la fila esta vacia si la fila esta llena devuelve un true;
+/* function comprobarFilallena($tabla, $fila) {
+  $posicion = 0;
+
+  for ($i = BOARD_SIZE; $i>0 ; $i--) {
+  if ($tabla[$i][$fila] == "") {
+  return $i;
+  }else{
+  $posicion++;
+  }
+  }
+
+  if ($posicion == BOARD_SIZE) {
+  return false;
+  }
+  }
+ */
+//compruebo 4 posiciones en diagonal 
+function checkDiagonal($grid, $player) {
+    for ($row = 3;
+            $row < BOARD_SIZE;
+            $row++) {
+        for ($col = 0;
+                $col < BOARD_SIZE - 3;
+                $col++) {
+            if ($grid[$row][$col] == $player &&
+                    $grid[$row - 1][$col + 1] == $player &&
+                    $grid[$row - 2][$col + 2] == $player &&
+                    $grid[$row - 3][$col + 3] == $player) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+//compruebo 4 posiciones en diagonal inversa
+function checkDiagonalInversa($grid, $player) {
+    for ($row = 0;
+            $row < BOARD_SIZE - 3;
+            $row++) {
+        for ($col = 0;
+                $col < BOARD_SIZE - 3;
+                $col++) {
+            if ($grid[$row][$col] == $player &&
+                    $grid[$row + 1][$col + 1] == $player &&
+                    $grid[$row + 2][$col + 2] == $player &&
+                    $grid[$row + 3][$col + 3] == $player) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+//compruebo 4 posiciones en fila
+function checkFila($grid, $player) {
+    for ($row = 0; $row < BOARD_SIZE; $row++) {
+        for ($col = 0; $col < BOARD_SIZE - 3; $col++) {
+            if ($grid[$row][$col] == $player &&
+                    $grid[$row][$col + 1] == $player &&
+                    $grid[$row][$col + 2] == $player &&
+                    $grid[$row][$col + 3] == $player) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+//compruebo 4 posiciones en columna
+function checkColumna($grid, $player) {
+    for ($row = 0; $row < BOARD_SIZE - 3; $row++) {
+        for ($col = 0; $col < BOARD_SIZE; $col++) {
+            if ($grid[$row][$col] == $player &&
+                    $grid[$row + 1][$col] == $player &&
+                    $grid[$row + 2][$col] == $player &&
+                    $grid[$row + 3][$col] == $player) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+//compruebo si ha ganado o no
+function checkGanado($grid, $player) {
+    if (checkDiagonal($grid, $player)) {
+        return true;
+    }
+    if (checkDiagonalInversa($grid, $player)) {
+        return true;
+    }
+    if (checkFila($grid, $player)) {
+        return true;
+    }
+    if (checkColumna($grid, $player)) {
+        return true;
+    }
+    return false;
+}
+
+//compruebo si el tablero esta lleno o no
+function tableroLleno($tabla) {
+    for ($i = 0; $i < BOARD_SIZE; $i++) {
+        if ($tabla[0][$i] == "") {
+            return false;
+        }
+    }
+    return true;
+}
+
+?>
