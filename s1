@@ -1,0 +1,71 @@
+<?php
+
+
+require 'vendor/autoload.php';
+session_start();
+
+//$_SESSION['variable']
+use eftec\bladeone\BladeOne;
+
+$views = __DIR__ . '/views';
+$cache = __DIR__ . '/cache';
+$blade = new BladeOne($views, $cache, BladeOne::MODE_DEBUG); // MODE_DEBUG allows to pinpoint troubles.
+
+//constantes
+const BOARD_SIZE = 7;
+const PATH_PLAYER_PIC = "public\assets\img\amarillo.png";
+const PATH_COMPUTER_PIC = "public\assets\img\arojo.png";
+
+
+//inicio de programma si esta vacio se crea
+if (empty($_POST)) {
+    $_SESSION['tablero'] = array_fill(0, BOARD_SIZE, array_fill(0, BOARD_SIZE, ""));
+    echo $blade->run('move');
+} else {
+    include 'functions.php'; //fichero con funciones
+    //variables 
+    $xUser = filter_input(INPUT_POST, 'x');
+    $yUser = filter_input(INPUT_POST, 'y');
+    $table = $_SESSION['tablero'];
+    
+    //asignamos el 'o' a la tabla => usuario
+    $table[$xUser][$yUser] = 'o';
+        
+    //check ultimo movimiento usuario
+    if (checkVictory($table, 'o')) {
+        $result['gameRes'] = 1;
+        session_destroy();
+    } else if (fullBoard($table)) { //si el tablero esta lleno devuelve 0 => partida perdida
+        $result['gameRes'] = 0;
+    } else { //turno máquina
+        $xComputer;
+        $yComputer;
+        $marked = false;
+        
+        while(!$marked) {
+            $yComputer = rand(0, BOARD_SIZE - 1); //la columna
+            for($i = BOARD_SIZE - 1; $i>=0; $i--){
+                if ($table[$i][$yComputer] == '' && check($table, $yComputer, $i)) {
+                    $table[$i][$yComputer] = 'x'; // 'x' => la máquina
+                    $xComputer = $i; 
+                    $marked = true;
+                    break;
+                }
+            }
+        }
+        
+        
+        $result['x'] = $xComputer;
+        $result['y'] = $yComputer;
+        
+        //se comprueba si ha ganado el ordenador
+        if (checkVictory($table,'x')) {
+            $result['gameRes'] = -1;
+        } else if (fullBoard($table)) {
+            $result['gameRes'] = 0;
+        }
+    }
+    $_SESSION['tablero'] = $table;
+    echo json_encode($result);
+}
+?>
