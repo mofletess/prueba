@@ -1,0 +1,112 @@
+<?php 
+
+function checkDiagonal($tablero, $ficha){
+	for($i = 0; $i < BOARD_SIZE - 3; $i++){
+		for($j = 0; $j < BOARD_SIZE - 3; $j++){
+			if ($tablero[$i][$j] == $ficha && $tablero[$i+1][$j+1] == $ficha && $tablero[$i+2][$j+2] == $ficha &&$tablero[$i+3][$j+3] == $ficha)
+				return true;
+			
+		}
+	}
+	return false;
+}
+
+function checkDiagonalInversa($tablero, $ficha){
+	for($i = 3; $i < BOARD_SIZE; $i++){
+			for($j = 0; $j < BOARD_SIZE - 3; $j++){
+				if ($tablero[$i][$j] == $ficha && $tablero[$i-1][$j+1] == $ficha && $tablero[$i-2][$j+2] == $ficha &&$tablero[$i-3][$j+3] == $ficha)
+					return true;
+				
+			}
+		}
+	return false;
+}
+
+function checkFila($tablero, $ficha){
+	for($i = 0; $i < BOARD_SIZE; $i++){
+		for ($j = 0; $j < (BOARD_SIZE - 3); $j++){
+			if ($tablero[$i][$j] == $ficha && $tablero[$i][$j + 1] == $ficha && $tablero[$i][$j + 2] == $ficha && $tablero[$i][$j + 3] == $ficha)
+				return true;
+			
+		}			
+	}
+	return false;
+	
+}
+
+function checkColumna($tablero, $ficha){
+	for($i = 0; $i < BOARD_SIZE - 3; $i++){
+		for($j = 0; $j < BOARD_SIZE; $j++){
+			if ($tablero[$i][$j] == $ficha && $tablero[$i+1][$j] == $ficha && $tablero[$i+2][$j] == $ficha && $tablero[$i+3][$j] == $ficha)
+				return true;
+		}
+	}
+	
+	return false;
+}
+
+function checkGanado($tablero, $ficha){
+
+	if (checkDiagonal($tablero, $ficha)) return true;
+	if (checkDiagonalInversa($tablero, $ficha)) return true;
+	if (checkFila($tablero, $ficha)) return true;
+	if (checkColumna($tablero, $ficha)) return true;
+	
+	return false;
+
+}
+
+function tableroLleno($tablero){
+
+	for ($i = 0; $i < BOARD_SIZE; $i++) { 
+		for ($j=0; $j < BOARD_SIZE; $j++) { 
+			if ($tablero[$i][$j] == "")
+				return false;
+		}
+	}
+	return true;
+}
+
+function ultimaFilaLlena($tablero){
+
+	for ($j = 0; $j < BOARD_SIZE; $j++) { 
+		if ($tablero[0][$j] == "")
+			return false;
+	}
+	return true;
+}
+
+function columnaDisponible($tablero, $yComp){
+
+	for ($i = 0; $i < BOARD_SIZE; $i++) { 
+		if ($tablero[$i][$yComp] == "") //significa que hay huecos disponibles
+			return true;
+	}
+	return false;
+
+}
+
+function noFichaSuperior($tablero, $fila, $yComp){
+
+	for ($i = $fila - 1; $i >= 0; $i--) { 
+		if ($tablero[$i][$yComp] != "") //significa hay fichas por encima
+			return false;
+	}
+	return true;
+
+}
+
+// introducimos la ficha del jugador 
+function introducirX($tablero,$columna){
+    $fila = 6;
+    
+    while($fila >= 0){
+        if($tablero[$fila][$columna] == "" && noFichaSuperior($tablero, $fila, $columna))
+			return $fila;
+		$fila--;
+    }
+	return -1; //si no ha encontrado fila disponible
+}
+
+
+?>
