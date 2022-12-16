@@ -1,0 +1,102 @@
+<?php
+
+
+function checkDiagonal($table, $token) {
+    for($row = 3; $row < BOARD_SIZE; $row++){
+	for($col = 0; $col < BOARD_SIZE - 3; $col++){
+            if ($table[$row][$col] == $token   && 
+                $table[$row-1][$col+1] == $token &&
+		$table[$row-2][$col+2] == $token &&
+		$table[$row-3][$col+3] == $token){
+		return true;
+            }
+	}
+    }
+    return false;
+}
+
+
+function checkDiagonalInversa($table, $token) { //comprobar esta función
+    for($row = 0; $row < BOARD_SIZE - 3; $row++){
+	for($col = 0; $col < BOARD_SIZE - 3; $col++){
+            if ($table[$row][$col] == $token   && 
+		$table[$row+1][$col+1] == $token &&
+		$table[$row+2][$col+2] == $token &&
+		$table[$row+3][$col+3] == $token){
+		return true;
+		}
+            }
+        }
+    return false;
+}
+
+
+function checkRow($table,$token) {
+    for($row = 0; $row<BOARD_SIZE; $row++){
+	for ($col = 0;$col < BOARD_SIZE - 3;$col++){
+            if ($table[$row][$col] == $token   && 
+		$table[$row][$col+1] == $token &&
+		$table[$row][$col+2] == $token &&
+		$table[$row][$col+3] == $token){
+		return true;
+            }
+	}			
+    }
+    return false;
+}
+
+function checkColumn($table,$token) {
+    for($row = 0; $row < BOARD_SIZE - 3; $row++){
+	for($col = 0; $col < BOARD_SIZE; $col++){
+            if ($table[$row][$col] == $token   && 
+		$table[$row+1][$col] == $token &&
+		$table[$row+2][$col] == $token &&
+		$table[$row+3][$col] == $token){
+		return true;
+            }
+	}
+    }
+    
+    return false;
+}
+
+
+function checkVictory($table,$token) { //comprueba victoria en todos los ejes con la ficha pasada
+    if (checkDiagonal($table, $token)) {
+        return true;
+    }
+    if (checkDiagonalInversa($table, $token)) {
+        return true;
+    }
+    if (checkRow($table, $token)) {
+        return true;
+    }
+    if (checkColumn($table, $token)) {
+        return true;
+    }
+    return false;
+}
+
+
+function fullBoard($table) {
+        for ($j = 0; $j < BOARD_SIZE; $j++) {
+            if ($table[0][$j] == "" ) {
+                return false;
+            }
+        }
+    return true;
+}
+
+
+function check($table, $yComputer, $x){
+            for($i = 0; $i<=$x; $i++){
+                if ($table[$i][$yComputer] != ''){
+                    return false;
+                }
+            }
+    return true;
+}
+
+
+
+?>
