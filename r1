@@ -1,0 +1,82 @@
+<?php
+
+session_start();
+require "vendor/autoload.php";
+include 'funciones.php';
+
+use eftec\bladeone\BladeOne;
+
+$views = _DIR_ . '\views'; // it uses the folder /views to read the templates
+$cache = _DIR_ . '\cache'; // it uses the folder /cache to compile the result. 
+
+$blade = new BladeOne($views, $cache, BladeOne::MODE_DEBUG);
+
+const BOARD_SIZE = 7;
+const PATH_PLAYER_PIC = "public/assets/img/amarillo.png";
+const PATH_COMPUTER_PIC = "public/assets/img/rojo.png";
+
+if(empty($_POST))
+{
+    $_SESSION['tablero'] = array_fill(0, BOARD_SIZE, array_fill(0, BOARD_SIZE, "")); 
+    echo $blade->run('move');
+}else
+{
+    $posicionX= filter_input(INPUT_POST,'x');
+    $posicionY= filter_input(INPUT_POST,'y');
+    $tablero=$_SESSION['tablero'];
+    $fichaUsuario='o';
+    $fichaMaquina='x';
+    $tablero[$posicionX][$posicionY]=$fichaUsuario;
+  
+    if(comprobarGanador($tablero,$fichaUsuario))
+    {
+        $resultado['gameRes']=1;
+    }else if(!comprobarHueco($tablero))
+    {
+        $resultado['gameRes']=0;
+    }else
+    {    
+        $fila="";
+        $salir=false;
+            do
+            {
+                $columna= rand(0,BOARD_SIZE-1);
+                    
+                for($i=BOARD_SIZE-1;$i>=0;$i--)
+                {
+                    if($tablero[$i][$columna]=="")
+                    {
+                        $tablero[$i][$columna]=$fichaMaquina;
+                        $fila=$i;
+                        $salir=true; 
+                        break;
+                    }
+                    
+                }  
+                
+                
+                 
+             } while (!$salir);
+             $resultado['x']=$fila;
+             $resultado['y']=$columna;
+        if (comprobarGanador($tablero, $fichaMaquina))
+        {
+            $resultado['gameRes']=-1;
+        } else
+        {
+            if(!comprobarHueco($tablero))
+            {
+                $resultado['gameRes']=0;
+            }
+        }      
+                
+        
+    }
+    
+    $_SESSION['tablero'] = $tablero;
+    echo json_encode($resultado);
+}
+
+
+
+?>
